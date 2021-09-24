@@ -161,15 +161,14 @@ public class FcrepoIndexer extends RouteBuilder {
                 .setBody(simple("${null}"))
                 .multicast().parallelProcessing()
                 //pass it to milliner
-                .toD(getMillinerBaseUrl() + "node/${exchangeProperty.uuid}?connectionClose=true")
+                .toD(getMillinerBaseUrl() + "node/${exchangeProperty.uuid}?connectionClose=true&disableStreamCache=true")
                 .choice()
                         .when()
                         .simple("${exchangeProperty.event.object.isNewVersion}")
                                 //pass it to milliner
                                 .toD(
-                                        getMillinerBaseUrl() + "version/${exchangeProperty.uuid}?connectionClose=true"
+                                        getMillinerBaseUrl() + "version/${exchangeProperty.uuid}?connectionClose=true&disableStreamCache=true"
                                     ).endChoice();
-
 
 
         from("{{node.delete.stream}}")
@@ -201,7 +200,9 @@ public class FcrepoIndexer extends RouteBuilder {
                 .setBody(simple("${null}"))
 
                 // Remove the file from Gemini.
-                .toD(getMillinerBaseUrl() + "node/${exchangeProperty.uuid}?connectionClose=true");
+                .toD(getMillinerBaseUrl() +
+                     "node/${exchangeProperty.uuid}?connectionClose=true&disableStreamCache=true"
+                );
 
         from("{{media.stream}}")
                 .routeId("FcrepoIndexerMedia")
@@ -225,7 +226,9 @@ public class FcrepoIndexer extends RouteBuilder {
                 .setBody(simple("${null}"))
 
                 // Pass it to milliner.
-                .toD(getMillinerBaseUrl() + "media/${exchangeProperty.sourceField}?connectionClose=true");
+                .toD(getMillinerBaseUrl() +
+                     "media/${exchangeProperty.sourceField}?connectionClose=true&disableStreamCache=true"
+                );
 
         from("{{file.stream}}")
                 .routeId("FcrepoIndexerFile")
@@ -253,7 +256,7 @@ public class FcrepoIndexer extends RouteBuilder {
                 )
 
                 // Index the file in Gemini.
-                .toD(getGeminiBaseUrl() + "${exchangeProperty.uuid}?connectionClose=true");
+                .toD(getGeminiBaseUrl() + "${exchangeProperty.uuid}?connectionClose=true&disableStreamCache=true");
 
         from("{{file.external.stream}}")
                 .routeId("FcrepoIndexerExternalFile")
@@ -277,7 +280,9 @@ public class FcrepoIndexer extends RouteBuilder {
                 .setBody(simple("${null}"))
 
                 // Pass it to milliner.
-                .toD(getMillinerBaseUrl() + "external/${exchangeProperty.uuid}?connectionClose=true");
+                .toD(getMillinerBaseUrl() +
+                     "external/${exchangeProperty.uuid}?connectionClose=true&disableStreamCache=true"
+                );
 
     }
 }
